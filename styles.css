@@ -1,0 +1,9 @@
+.nightlight-repost {
+    color: #1da1f2;
+    /* Twitter blue color */
+}
+
+.nightlight-repost:hover {
+    color: #0d8bce;
+    /* Slightly darker blue */
+}
