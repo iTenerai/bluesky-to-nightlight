@@ -16,7 +16,7 @@ var password = "";
 
 function squeezeNightlightIn() {
 
-    document.querySelectorAll('[data-testid="repost"]').forEach((element) => {
+    document.querySelectorAll('[aria-label="Repost or quote post"]').forEach((element) => {
         element.addEventListener('click', function () {
 
             // Unlike Twitter, Bluesky uses the author's adress in its post id
@@ -30,7 +30,7 @@ function squeezeNightlightIn() {
 
 
     // Target the repost button container
-    const posts = document.querySelectorAll('[data-testid="Dropdown"]');
+    const posts = document.querySelectorAll('[aria-label="Test"], [role="menu"]');
     const dropdownBackground = document.getElementsByClassName("css-175oi2r r-1p0dtai r-1d2f490 r-1xcajam r-zchlnj r-ipm5af")[0];
 
     posts.forEach((post) => {
@@ -72,13 +72,11 @@ function repostToNightlight(element) {
     var picture = "";
     var text = "";
 
-    if (element.querySelector('[data-testid="postPhoto"]') == null) {
+    if (element.querySelector('[data-expoimage="true"]') == null) {
         console.log(prefix + "No picture found, adjusting to text-only repost");
         type = 0;
     } else {
-        picture = element.querySelector('[data-testid="postPhoto"]').querySelector('img').src;
-        // Adjust the image quality to highest resolution
-        picture = picture.replace("name=small", "name=large");
+        picture = element.querySelector('[data-expoimage="true"]').querySelector('img').src;
     }
 
     if (element.querySelector('[data-testid="postText"]') == null) {
@@ -89,7 +87,7 @@ function repostToNightlight(element) {
     }
 
     // Get the author of the post, as a link
-    var author = element.querySelector('[data-testid="User-Name"]').querySelector('[role="link"]').href;
+    var author = element.querySelector('[aria-label="View profile"]').querySelector('[role="link"]').href;
 
     console.log(prefix + "Picture: ", picture);
     console.log(prefix + "Text: ", text);
@@ -105,7 +103,7 @@ function repostToNightlight(element) {
         `login=${encodeURIComponent(login)}&` +
         `password=${encodeURIComponent(password)}&` +
         `createPost=${encodeURIComponent(JSON.stringify(postData))}&` +
-        `provider=twitter`;
+        `provider=bluesky`;
 
     chrome.runtime.sendMessage(
         { type: "sendRequest", requestURL: requestURL },
