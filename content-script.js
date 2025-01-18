@@ -13,6 +13,7 @@ const prefix = "[Nightlight Repost Debug]: ";
 var currentPost = null;
 var login = "";
 var password = "";
+var dropdownBackground = null;
 
 function squeezeNightlightIn() {
 
@@ -22,7 +23,7 @@ function squeezeNightlightIn() {
             // Unlike Twitter, Bluesky uses the author's adress in its post id
             // Example: feedItem-by-thehorrormaster.bsky.social
 
-            const parent = element.closest('[data-testid="feedItem-by-*"]');
+            const parent = element.closest('[data-testid^="feedItem-by-"]');
             console.log(prefix + "closest parent found for reposting: ", parent);
             currentPost = parent;
         });
@@ -31,11 +32,10 @@ function squeezeNightlightIn() {
 
     // Target the repost button container
     const posts = document.querySelectorAll('[aria-label="Test"], [role="menu"]');
-    const dropdownBackground = document.getElementsByClassName("css-175oi2r r-1p0dtai r-1d2f490 r-1xcajam r-zchlnj r-ipm5af")[0];
 
     posts.forEach((post) => {
         // Avoid adding the button multiple times
-        if (post.querySelector('.nightlight-repost') || !post.querySelector('[data-testid="repostConfirm"]')) return;
+        if (post.querySelector('.nightlight-repost') || !post.querySelector('[data-testid="repostDropdownRepostBtn"]')) return;
 
         const icon = document.createElement('div');
         icon.title = 'Nightlight Repost';
@@ -43,16 +43,16 @@ function squeezeNightlightIn() {
         icon.style.cursor = 'pointer';
 
         // I am NOT making the elements manually, innerHTML is all you get
-        icon.innerHTML = `<div role="menuitem" tabindex="2" class="css-175oi2r r-1loqt21 r-18u37iz r-1mmae3n r-3pj75a r-13qz1uu r-o7ynqc r-6416eg r-1ny4l3l" data-testid="nightlightConfirm"><div class="css-175oi2r r-1777fci r-faml9v">
-      <img src="` + browser.runtime.getURL('assets/logo_monochrome.png') + `" alt="Nightlight Repost" width="24" height="24" class="class="r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1nao33i r-1q142lx"">
-      </div><div class="css-175oi2r r-16y2uox r-1wbh5a2"><div dir="ltr" class="css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q" style="color: rgb(231, 233, 234);"><span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3">Nightlight</span></div></div></div>`
+        icon.innerHTML = `<div aria-label="nightlightRepost" role="menuitem" tabindex="1" class="css-175oi2r r-1loqt21 r-1otgn73" style="flex-direction: row; align-items: center; gap: 16px; padding: 8px 10px; border-radius: 4px; min-height: 32px; outline: 0px;" data-testid="repostDropdownNightlightBtn"><div dir="auto" class="css-146c3p1" style="font-size: 13.125px; letter-spacing: 0px; color: rgb(215, 221, 228); flex: 1 1 0%; font-weight: 600; line-height: 13.125px; font-family: InterVariable, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;; font-variant: no-contextual;">Nightlight</div><div class="css-175oi2r" style="margin-right: -2px; margin-left: 12px;">
+        <img src="` + browser.runtime.getURL('assets/logo_monochrome.png') + `" alt="Nightlight Repost" width="24" height="24"        
+        </div></div>`
 
         icon.addEventListener('click', () => {
             repostToNightlight(currentPost);
-            dropdownBackground.click();
+            document.querySelector('[aria-label="Context menu backdrop, click to close the menu."]').click();
         });
 
-        post.appendChild(icon);
+        post.firstChild.appendChild(icon);
     });
 }
 
@@ -83,20 +83,20 @@ function repostToNightlight(element) {
         console.log(prefix + "No text found, adjusting to picture-only repost");
         type = 1;
     } else {
-        text = element.querySelector('[data-testid="postText"]').firstChild.innerHTML;
+        text = element.querySelector('[data-testid="postText"]').textContent;
     }
 
     // Get the author of the post, as a link
-    var author = element.querySelector('[aria-label="View profile"]').querySelector('[role="link"]').href;
+    var author = element.querySelector('[aria-label="View profile"], [role="link"]').href;
 
     console.log(prefix + "Picture: ", picture);
     console.log(prefix + "Text: ", text);
     console.log(prefix + "Author: ", author);
 
     var postData = {
-        description: text,
-        picture: picture,
-        author: author,
+        description: encodeURIComponent(text),
+        picture: encodeURIComponent(picture),
+        author: encodeURIComponent(author),
     };
 
     var requestURL = `https://night-light.cz/nlapi/nlapi2?` +
@@ -104,6 +104,8 @@ function repostToNightlight(element) {
         `password=${encodeURIComponent(password)}&` +
         `createPost=${encodeURIComponent(JSON.stringify(postData))}&` +
         `provider=bluesky`;
+
+    console.log(prefix + "Request URL: ", requestURL);
 
     chrome.runtime.sendMessage(
         { type: "sendRequest", requestURL: requestURL },
