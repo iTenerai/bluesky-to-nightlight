@@ -17,10 +17,7 @@
         "https://bsky.app"
     ],
     "background": {
-        "scripts": [
-            "background.js"
-        ],
-        "persistent": false
+        "service_worker": "background.js"
     },
     "content_scripts": [
         {
@@ -37,6 +34,14 @@
         }
     ],
     "web_accessible_resources": [
-        "assets/logo_monochrome.png"
+        {
+            "resources": [
+                "assets/logo_monochrome.png"
+            ],
+            "matches": [
+                "https://bsky.app/*",
+                "https://night-light.cz/*"
+            ]
+        }
     ]
 }
