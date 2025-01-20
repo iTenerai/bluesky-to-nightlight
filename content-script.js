@@ -44,7 +44,7 @@ function squeezeNightlightIn() {
 
         // I am NOT making the elements manually, innerHTML is all you get
         icon.innerHTML = `<div aria-label="nightlightRepost" role="menuitem" tabindex="1" class="css-175oi2r r-1loqt21 r-1otgn73" style="flex-direction: row; align-items: center; gap: 16px; padding: 8px 10px; border-radius: 4px; min-height: 32px; outline: 0px;" data-testid="repostDropdownNightlightBtn"><div dir="auto" class="css-146c3p1" style="font-size: 13.125px; letter-spacing: 0px; color: rgb(215, 221, 228); flex: 1 1 0%; font-weight: 600; line-height: 13.125px; font-family: InterVariable, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;; font-variant: no-contextual;">Nightlight</div><div class="css-175oi2r" style="margin-right: -2px; margin-left: 12px;">
-        <img src="` + browser.runtime.getURL('assets/logo_monochrome.png') + `" alt="Nightlight Repost" width="24" height="24"        
+        <img src="` + chrome.runtime.getURL('assets/logo_monochrome.png') + `" alt="Nightlight Repost" width="24" height="24"        
         </div></div>`
 
         icon.addEventListener('click', () => {

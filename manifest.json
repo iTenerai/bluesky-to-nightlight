@@ -13,8 +13,8 @@
         "notifications"
     ],
     "host_permissions": [
-        "https://night-light.cz",
-        "https://bsky.app"
+        "https://night-light.cz/*",
+        "https://bsky.app/*"
     ],
     "background": {
         "service_worker": "background.js"
